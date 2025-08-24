@@ -10,14 +10,14 @@ This plan outlines the steps to implement the minimal note-taking app. Each step
     - [x] 1.3. Install `better-sqlite3` for database interaction and `@tiptap/react` and `@tiptap/starter-kit` for the editor.
         - _Requirements: 5.1_
 
-- [ ] 2. **Database and Main Process Logic**
-    - [ ] 2.1. Create a `database.js` module in the main process to handle all SQLite operations.
+- [x] 2. **Database and Main Process Logic**
+    - [x] 2.1. Create a `database.js` module in the main process to handle all SQLite operations.
         - Implement functions for `init`, `getNotes`, `createNote`, `updateNoteTitle`, `updateNoteContent`, and `deleteNote`.
         - The `init` function should create the `notes` table if it doesn't exist.
         - _Requirements: 5.1, 5.2_
-    - [ ] 2.2. In `main.js`, initialize the database connection when the app starts.
+    - [x] 2.2. In `main.js`, initialize the database connection when the app starts.
         - _Requirements: 5.2_
-    - [ ] 2.3. Create a `preload.js` script to expose the database functions to the renderer process using `contextBridge`.
+    - [x] 2.3. Create a `preload.js` script to expose the database functions to the renderer process using `contextBridge`.
         - Expose the functions as `window.db.getNotes`, `window.db.createNote`, etc.
         - _Requirements: 5.1, 5.2_
 
