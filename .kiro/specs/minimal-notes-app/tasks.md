@@ -2,12 +2,12 @@
 
 This plan outlines the steps to implement the minimal note-taking app. Each step is designed to be an incremental and testable unit of work.
 
-- [ ] 1. **Project Setup**
-    - [ ] 1.1. Initialize a new Electron project using a suitable boilerplate (e.g., `electron-react-boilerplate` or a similar template with Vite).
+- [x] 1. **Project Setup**
+    - [x] 1.1. Initialize a new Electron project using a suitable boilerplate (e.g., `electron-react-boilerplate` or a similar template with Vite).
         - _Requirements: 6.1, 6.5_
-    - [ ] 1.2. Install and configure Tailwind CSS for styling.
+    - [x] 1.2. Install and configure Tailwind CSS for styling.
         - _Requirements: 6.5_
-    - [ ] 1.3. Install `better-sqlite3` for database interaction and `@tiptap/react` and `@tiptap/starter-kit` for the editor.
+    - [x] 1.3. Install `better-sqlite3` for database interaction and `@tiptap/react` and `@tiptap/starter-kit` for the editor.
         - _Requirements: 5.1_
 
 - [ ] 2. **Database and Main Process Logic**
