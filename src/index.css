@@ -25,6 +25,7 @@ html, body, #root {
 /* Ensure no default page margins */
 body {
   margin: 0;
+  font-family: var(--font-mono);
 }
 
 /* Dark mode root behavior */
@@ -60,4 +61,18 @@ body {
 
 .prose blockquote {
   @apply border-l-4 border-slate-300 dark:border-slate-700 pl-4 italic text-slate-600 dark:text-slate-300;
+}
+
+/* Make TipTap editor fill the container */
+.ProseMirror {
+  min-height: 100%;
+}
+
+/* Remove any focus outlines/borders on the editable area */
+.ProseMirror,
+.ProseMirror:focus,
+.ProseMirror-focused {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }
