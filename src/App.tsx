@@ -1,34 +1,28 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/electron-vite.animate.svg'
-import './App.css'
+import Sidebar from './components/Sidebar'
+import Editor from './components/Editor'
+import type { Note } from './types'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selected, setSelected] = useState<Note | null>(null)
 
   return (
-    <>
-      <div>
-        <a href="https://electron-vite.github.io" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen w-full flex bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-100">
+      <aside className="w-72 border-r border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 backdrop-blur">
+        <Sidebar
+          selectedId={selected?.id ?? null}
+          onSelect={setSelected}
+          onCreated={setSelected}
+        />
+      </aside>
+      <main className="flex-1 overflow-auto">
+        <div className="m-6">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+            <Editor key={selected?.id ?? 'no-note'} content={selected?.content ?? ''} />
+          </div>
+        </div>
+      </main>
+    </div>
   )
 }
 

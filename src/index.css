@@ -1,3 +1,63 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+/* Use class-based dark mode in Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+@plugin "@tailwindcss/typography";
+
+/* Tell Tailwind where to scan for class names (v4) */
+@source "../index.html";
+@source "./**/*.{js,jsx,ts,tsx}";
+
+/* Optional: light theming tokens */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "JetBrains Mono", "Fira Code", "Source Code Pro", "Courier New", monospace;
+}
+
+/* App scaffolding helpers */
+:root {
+  color-scheme: light;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Ensure no default page margins */
+body {
+  margin: 0;
+}
+
+/* Dark mode root behavior */
+.dark {
+  color-scheme: dark;
+}
+
+/* Prose and code block tuning */
+.prose {
+  --tw-prose-body: theme(colors.slate.800);
+  --tw-prose-headings: theme(colors.slate.900);
+  --tw-prose-links: theme(colors.indigo.700);
+  --tw-prose-bullets: theme(colors.slate.400);
+}
+.dark .prose {
+  --tw-prose-body: theme(colors.slate.200);
+  --tw-prose-headings: theme(colors.slate.100);
+  --tw-prose-links: theme(colors.indigo.400);
+  --tw-prose-bullets: theme(colors.slate.500);
+}
+
+.prose pre {
+  @apply bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 overflow-x-auto;
+}
+
+.prose code {
+  @apply font-mono text-[0.95em];
+}
+
+.prose :not(pre) > code {
+  @apply bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200/60 dark:border-slate-700/60;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-slate-300 dark:border-slate-700 pl-4 italic text-slate-600 dark:text-slate-300;
+}
