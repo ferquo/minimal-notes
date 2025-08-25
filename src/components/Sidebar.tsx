@@ -17,7 +17,9 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
     setLoading(true)
     try {
       const result = await window.db.getNotes()
-      setNotes(result as unknown as Note[])
+      const list = result as unknown as Note[]
+      setNotes(list)
+      return list
     } finally {
       setLoading(false)
     }
@@ -28,6 +30,14 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
     await refresh()
     onCreated?.(created as unknown as Note)
     onSelect(created as unknown as Note)
+  }
+
+  async function handleDeleted(id: number) {
+    const list = (await refresh()) || []
+    if (selectedId === id) {
+      if (list.length > 0) onSelect(list[0])
+      // If no notes remain, leave selection as-is; editor will show last content until changed
+    }
   }
 
   useEffect(() => {
@@ -58,7 +68,13 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
         <ul>
           {notes.map((n) => (
             <li key={n.id}>
-              <NoteItem note={n} active={n.id === selectedId} onClick={onSelect} />
+              <NoteItem
+                note={n}
+                active={n.id === selectedId}
+                onClick={onSelect}
+                onRenamed={refresh}
+                onDeleted={handleDeleted}
+              />
             </li>
           ))}
         </ul>

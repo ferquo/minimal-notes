@@ -5,10 +5,11 @@ import TextAlign from '../editor/extensions/TextAlign'
 import EditorToolbar from './EditorToolbar'
 
 type Props = {
+  noteId: number | null
   content: string
 }
 
-export default function Editor({ content }: Props) {
+export default function Editor({ noteId, content }: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -21,6 +22,23 @@ export default function Editor({ content }: Props) {
       attributes: {
         class: 'min-h-full',
       },
+    },
+    onUpdate: ({ editor }) => {
+      // Debounce saves to avoid excessive writes
+      if ((window as any).__saveTimer) {
+        clearTimeout((window as any).__saveTimer)
+      }
+      ;(window as any).__saveTimer = setTimeout(async () => {
+        if (noteId != null) {
+          const html = editor.getHTML()
+          try {
+            await window.db.updateNoteContent(noteId, html)
+          } catch (err) {
+            // Silently ignore here; surfaced errors can be added later (Req 5)
+            console.error('Failed to save content', err)
+          }
+        }
+      }, 500)
     },
   })
 

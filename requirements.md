@@ -200,18 +200,18 @@ This plan outlines the steps to implement the minimal note-taking app. Each step
         - The editor's content should be updated when a new note is selected.
         - _Requirements: 4.1, 4.3_
 
-- [ ] 4. **Connecting UI to Functionality**
-    - [ ] 4.1. Implement the logic to pass the selected note's content to the `Editor.js` component.
+- [x] 4. **Connecting UI to Functionality**
+    - [x] 4.1. Implement the logic to pass the selected note's content to the `Editor.js` component.
         - _Requirements: 4.1_
-    - [ ] 4.2. In the `Editor.js` component, add logic to automatically save the note's content when it changes.
+    - [x] 4.2. In the `Editor.js` component, add logic to automatically save the note's content when it changes.
         - Use a debounced function to call `window.db.updateNoteContent` to avoid excessive database writes.
         - _Requirements: 4.2, 5.1_
-    - [ ] 4.3. Implement the note deletion functionality.
+    - [x] 4.3. Implement the note deletion functionality.
         - Add a context menu (on right-click) to the `NoteItem.js` component with a "Delete" option.
         - The "Delete" option should show a confirmation dialog before calling `window.db.deleteNote`.
         - After deletion, the note list in the sidebar should be refreshed.
         - _Requirements: 2.1, 2.2, 2.3, 2.4_
-    - [ ] 4.4. Implement the note renaming functionality.
+    - [x] 4.4. Implement the note renaming functionality.
         - Add a "Rename" option to the context menu in `NoteItem.js`.
         - When clicked, the note title should become an editable input field.
         - On blur or Enter, the new title should be saved using `window.db.updateNoteTitle`, and the note list should be refreshed.
