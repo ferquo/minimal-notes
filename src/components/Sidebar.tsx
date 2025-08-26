@@ -32,6 +32,18 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
     onSelect(created as unknown as Note)
   }
 
+  async function select(note: Note) {
+    try {
+      const list = (await window.db.getNotes()) as unknown as Note[]
+      setNotes(list)
+      const latest = list.find((n) => n.id === note.id) || note
+      onSelect(latest)
+    } catch (e) {
+      console.error('Failed to fetch latest note before selecting', e)
+      onSelect(note)
+    }
+  }
+
   async function handleDeleted(id: number) {
     const list = (await refresh()) || []
     if (selectedId === id) {
@@ -71,7 +83,7 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
               <NoteItem
                 note={n}
                 active={n.id === selectedId}
-                onClick={onSelect}
+                onClick={select}
                 onRenamed={refresh}
                 onDeleted={handleDeleted}
               />

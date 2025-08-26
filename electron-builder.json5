@@ -1,9 +1,9 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.electron.minimal-notes",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "Minimal Notes",
   "directories": {
     "output": "release/${version}"
   },
@@ -12,6 +12,7 @@
     "dist-electron"
   ],
   "mac": {
+    "icon": "build/icons/icon.icns",
     "target": [
       "dmg"
     ],

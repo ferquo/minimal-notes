@@ -20,6 +20,13 @@ function App() {
           key={selected?.id ?? 'no-note'}
           noteId={selected?.id ?? null}
           content={selected?.content ?? ''}
+          onSaved={(id, html) => {
+            setSelected((prev) =>
+              prev && prev.id === id
+                ? { ...prev, content: html, updatedAt: new Date().toISOString() }
+                : prev
+            )
+          }}
         />
       </main>
     </div>

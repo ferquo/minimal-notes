@@ -17,7 +17,8 @@ export function init(dbPath: string) {
 }
 
 export function getNotes() {
-  return db.prepare('SELECT * FROM notes ORDER BY updatedAt DESC').all();
+  // Order by creation time so list order stays stable regardless of edits
+  return db.prepare('SELECT * FROM notes ORDER BY createdAt DESC').all();
 }
 
 export function createNote() {
