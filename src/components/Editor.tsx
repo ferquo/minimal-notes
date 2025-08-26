@@ -86,7 +86,7 @@ export default function Editor({ noteId, content, onSaved }: Props) {
           <EditorToolbar editor={editor} />
           <EditorContent
             editor={editor}
-            className="prose prose-slate dark:prose-invert font-mono max-w-none flex-1 min-h-0 w-full p-4 md:p-6 outline-none border-0 focus:outline-none focus:ring-0 focus:border-transparent leading-relaxed text-slate-800 dark:text-slate-100 overflow-auto bg-transparent"
+            className="prose prose-slate dark:prose-invert font-sans max-w-none flex-1 min-h-0 w-full p-4 md:p-6 outline-none border-0 focus:outline-none focus:ring-0 focus:border-transparent leading-relaxed text-slate-800 dark:text-slate-100 overflow-auto bg-transparent"
           />
         </>
       ) : null}
