@@ -5,7 +5,8 @@ permissions:
 
 on:
   push:
-    branches: [ master ]
+    tags:
+      - 'v*'
 
 jobs:
   build-and-publish:
@@ -28,6 +29,10 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Extract version from tag
+        id: vars
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
       - name: Build & publish
         uses: samuelmeuli/action-electron-builder@v1
         with:
@@ -35,4 +40,4 @@ jobs:
           package_manager: npm
           build_script_name: build:renderer
           release: true
-          args: -c.extraMetadata.version=1.0.${{ github.run_number }} --publish always
+          args: -c.extraMetadata.version=${{ steps.vars.outputs.VERSION }} --publish always
