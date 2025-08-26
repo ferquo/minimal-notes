@@ -42,5 +42,8 @@
       "AppImage"
     ],
     "artifactName": "${productName}-Linux-${version}.${ext}"
-  }
+  },
+  "publish": [
+    { "provider": "github", "owner": "ferquo", "repo": "minimal-notes" }
+  ]
 }

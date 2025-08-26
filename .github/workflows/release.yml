@@ -1,13 +1,20 @@
 name: Build and Release
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ master ]
+    tags:
+      - 'v*'
 
 jobs:
   build-and-publish:
     name: Build & Publish (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -23,10 +30,22 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Build and publish with electron-builder
+      - name: Build (no publish)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           package_manager: npm
           build_script_name: build:renderer
-          args: -c.extraMetadata.version=0.0.${{ github.run_number }} --publish always
+          # Set unique version for CI builds
+          args: -c.extraMetadata.version=0.0.${{ github.run_number }}
+
+      - name: Build & publish on tag
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          package_manager: npm
+          build_script_name: build:renderer
+          release: true
+          args: --publish always
