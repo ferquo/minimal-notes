@@ -86,7 +86,9 @@ export default function Editor({ noteId, content, onSaved }: Props) {
   return (
     <div className="h-full flex flex-col min-h-0">
       {noteId == null ? (
-        <div className="p-6 text-sm text-slate-500">Select or create a note to start editing.</div>
+        <div className="flex-1 min-h-0 flex items-center justify-center p-6 text-sm text-slate-500 select-none text-center">
+          Select or create a note to start editing.
+        </div>
       ) : editor ? (
         <>
           <EditorToolbar editor={editor} />
