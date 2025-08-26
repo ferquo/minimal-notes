@@ -73,3 +73,7 @@ Releases are built in GitHub Actions. Create a tag like `v1.2.3` and push it (or
 ## Privacy
 
 All data stays on your machine. There is no telemetry, no analytics, and no network syncing.
+
+## License
+
+This project is open source under the MIT License. See the `LICENSE` file for details.
