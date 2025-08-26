@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:renderer": "tsc && vite build",
     "build": "tsc && vite build && electron-builder",
     "icons:win": "node scripts/png-to-ico.js build/icons/icon-256.png build/icons/icon.ico",
     "icons:win:mac": "sips -z 256 256 build/icons/icon.png --out build/icons/icon-256.png && node scripts/png-to-ico.js build/icons/icon-256.png build/icons/icon.ico",
