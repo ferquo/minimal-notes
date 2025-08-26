@@ -22,7 +22,7 @@ export function getNotes() {
 }
 
 export function createNote() {
-  const result = db.prepare('INSERT INTO notes (title) VALUES (?)').run('New Note');
+  const result = db.prepare('INSERT INTO notes (title) VALUES (?)').run('New note');
   return db.prepare('SELECT * FROM notes WHERE id = ?').get(result.lastInsertRowid);
 }
 

@@ -7,9 +7,10 @@ type Props = {
   onClick: (note: Note) => void
   onDeleted?: (id: number) => void
   onRenamed?: () => void
+  startRenaming?: boolean
 }
 
-export default function NoteItem({ note, active, onClick, onDeleted, onRenamed }: Props) {
+export default function NoteItem({ note, active, onClick, onDeleted, onRenamed, startRenaming }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [renaming, setRenaming] = useState(false)
   const [title, setTitle] = useState(note.title)
@@ -18,6 +19,14 @@ export default function NoteItem({ note, active, onClick, onDeleted, onRenamed }
   useEffect(() => {
     setTitle(note.title)
   }, [note.title])
+
+  // If instructed, immediately enter rename mode with prefilled text "New note"
+  useEffect(() => {
+    if (startRenaming) {
+      setRenaming(true)
+      setTitle('New note')
+    }
+  }, [startRenaming])
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -60,22 +69,23 @@ export default function NoteItem({ note, active, onClick, onDeleted, onRenamed }
 
   return (
     <div ref={containerRef} className="relative group">
-      <button
-        onClick={() => onClick(note)}
-        className={[
-          'w-full text-left px-3 py-2 truncate transition-colors pr-10',
-          active
-            ? 'bg-indigo-50 text-indigo-700 border-l-2 border-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-400/60'
-            : 'hover:bg-slate-100 dark:hover:bg-slate-800/60',
-        ].join(' ')}
-        title={note.title}
-      >
-        {renaming ? (
+      {renaming ? (
+        <div
+          className={[
+            'w-full text-left px-3 py-2 truncate transition-colors pr-10',
+            active
+              ? 'bg-indigo-50 text-indigo-700 border-l-2 border-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-400/60'
+              : 'hover:bg-slate-100 dark:hover:bg-slate-800/60',
+          ].join(' ')}
+        >
           <input
             autoFocus
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onFocus={(e) => e.currentTarget.select()}
             onKeyDown={(e) => {
+              // Keep key events from affecting parent elements
+              e.stopPropagation()
               if (e.key === 'Enter') commitRename()
               if (e.key === 'Escape') {
                 setRenaming(false)
@@ -85,15 +95,24 @@ export default function NoteItem({ note, active, onClick, onDeleted, onRenamed }
             onBlur={commitRename}
             className="w-full bg-transparent border border-slate-300 dark:border-slate-700 rounded px-1.5 py-0.5 text-sm outline-none focus:ring-2 focus:ring-indigo-400/50"
           />
-        ) : (
-          <>
-            <div className="text-sm font-medium truncate">{note.title || 'Untitled'}</div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
-              {new Date(note.updatedAt).toLocaleString()}
-            </div>
-          </>
-        )}
-      </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => onClick(note)}
+          className={[
+            'w-full text-left px-3 py-2 truncate transition-colors pr-10',
+            active
+              ? 'bg-indigo-50 text-indigo-700 border-l-2 border-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-400/60'
+              : 'hover:bg-slate-100 dark:hover:bg-slate-800/60',
+          ].join(' ')}
+          title={note.title}
+        >
+          <div className="text-sm font-medium truncate">{note.title || 'Untitled'}</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
+            {new Date(note.updatedAt).toLocaleString()}
+          </div>
+        </button>
+      )}
       {/* Hover-visible action button */}
       {!renaming && (
         <button

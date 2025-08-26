@@ -17,7 +17,6 @@ export default function Editor({ noteId, content, onSaved }: Props) {
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
     content,
-    autofocus: 'end',
     editable: true,
     editorProps: {
       attributes: {
@@ -51,6 +50,13 @@ export default function Editor({ noteId, content, onSaved }: Props) {
       editor.commands.setContent(content || '')
     }
   }, [content, editor])
+
+  // Focus editor only when an actual note gets selected
+  useEffect(() => {
+    if (editor && noteId != null) {
+      editor.chain().focus('end').run()
+    }
+  }, [noteId, editor])
 
   // Flush pending changes when switching notes or unmounting
   useEffect(() => {

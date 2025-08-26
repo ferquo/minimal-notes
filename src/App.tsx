@@ -12,7 +12,6 @@ function App() {
         <Sidebar
           selectedId={selected?.id ?? null}
           onSelect={setSelected}
-          onCreated={setSelected}
         />
       </aside>
       <main className="flex-1 min-h-0 h-screen p-3 overflow-auto">

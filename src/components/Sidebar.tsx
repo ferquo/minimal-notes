@@ -12,6 +12,8 @@ type Props = {
 export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(false)
+  const [renameId, setRenameId] = useState<number | null>(null)
+  const [pendingSelectId, setPendingSelectId] = useState<number | null>(null)
 
   async function refresh() {
     setLoading(true)
@@ -27,9 +29,11 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
 
   async function create() {
     const created = await window.db.createNote()
+    const newId = (created as any).id ?? null
+    setRenameId(newId)
+    setPendingSelectId(newId)
     await refresh()
     onCreated?.(created as unknown as Note)
-    onSelect(created as unknown as Note)
   }
 
   async function select(note: Note) {
@@ -84,7 +88,19 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
                 note={n}
                 active={n.id === selectedId}
                 onClick={select}
-                onRenamed={refresh}
+                startRenaming={renameId === n.id}
+                onRenamed={async () => {
+                  const currentId = n.id
+                  setRenameId(null)
+                  const list = (await refresh()) || []
+                  if (pendingSelectId === currentId) {
+                    // Now select the newly created (and renamed) note
+                    setPendingSelectId(null)
+                    const latest = list.find((x) => x.id === currentId)
+                    if (latest) select(latest)
+                    else onSelect(n)
+                  }
+                }}
                 onDeleted={handleDeleted}
               />
             </li>
