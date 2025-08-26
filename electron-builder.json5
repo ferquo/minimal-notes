@@ -12,13 +12,15 @@
     "dist-electron"
   ],
   "mac": {
-    "icon": "build/icons/icon.icns",
+    // Use PNG and let electron-builder convert to ICNS
+    "icon": "build/icons/icon.png",
     "target": [
       "dmg"
     ],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
+    "icon": "build/icons/icon.ico",
     "target": [
       {
         "target": "nsis",
