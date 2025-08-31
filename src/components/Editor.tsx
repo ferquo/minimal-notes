@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '../editor/extensions/TextAlign'
@@ -11,6 +11,8 @@ type Props = {
 }
 
 export default function Editor({ noteId, content, onSaved }: Props) {
+  // Track the last content successfully saved to avoid redundant writes
+  const lastSavedRef = useRef<string>(content || '')
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -31,8 +33,11 @@ export default function Editor({ noteId, content, onSaved }: Props) {
       ;(window as any).__saveTimer = setTimeout(async () => {
         if (noteId != null) {
           const html = editor.getHTML()
+          // Skip save if content hasn't changed since last successful save
+          if (html === lastSavedRef.current) return
           try {
             await window.db.updateNoteContent(noteId, html)
+            lastSavedRef.current = html
             // Inform parent so in-memory selected note stays in sync
             onSaved?.(noteId, html)
           } catch (err) {
@@ -47,6 +52,9 @@ export default function Editor({ noteId, content, onSaved }: Props) {
   // Update editor when selected note changes
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
+      // Ensure lastSavedRef matches the content we are about to set so
+      // the programmatic setContent does not trigger a redundant save.
+      lastSavedRef.current = content || ''
       editor.commands.setContent(content || '')
     }
   }, [content, editor])
@@ -67,11 +75,14 @@ export default function Editor({ noteId, content, onSaved }: Props) {
       }
       if (noteId != null && editor) {
         const html = editor.getHTML()
+        // Skip if nothing changed since last successful save
+        if (html === lastSavedRef.current) return
         try {
           // Fire-and-forget to avoid async cleanup issues
           window.db
             .updateNoteContent(noteId, html)
             .then(() => {
+              lastSavedRef.current = html
               if (noteId != null) onSaved?.(noteId, html)
             })
             .catch((err) => console.error('Failed to flush save', err))
