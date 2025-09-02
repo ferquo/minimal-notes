@@ -22,6 +22,21 @@ declare global {
       updateNoteContent: (id: number, content: string) => Promise<void>
       deleteNote: (id: number) => Promise<void>
     }
+    api: {
+      saveImage: (
+        noteId: string,
+        data: ArrayBuffer | Uint8Array,
+        mime: string
+      ) => Promise<{
+        url: string
+        mime: string
+        filename: string
+        width?: number
+        height?: number
+      }>
+      deleteNoteAttachments: (noteId: string) => Promise<boolean>
+      gcNoteAttachments: (noteId: string) => Promise<{ deleted: number }>
+    }
   }
 }
 

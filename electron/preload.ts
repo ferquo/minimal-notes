@@ -7,3 +7,11 @@ contextBridge.exposeInMainWorld('db', {
   updateNoteContent: (id: number, content: string) => ipcRenderer.invoke('updateNoteContent', id, content),
   deleteNote: (id: number) => ipcRenderer.invoke('deleteNote', id),
 })
+
+// Narrow bridge for attachments/images
+contextBridge.exposeInMainWorld('api', {
+  saveImage: (noteId: string, data: ArrayBuffer | Uint8Array, mime: string) =>
+    ipcRenderer.invoke('saveImage', { noteId, bytes: data, mime }),
+  deleteNoteAttachments: (noteId: string) => ipcRenderer.invoke('deleteNoteAttachments', noteId),
+  gcNoteAttachments: (noteId: string) => ipcRenderer.invoke('gcNoteAttachments', noteId),
+})

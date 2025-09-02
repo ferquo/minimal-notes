@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
 import TextAlign from '../editor/extensions/TextAlign'
 import EditorToolbar from './EditorToolbar'
 
@@ -13,9 +14,28 @@ type Props = {
 export default function Editor({ noteId, content, onSaved }: Props) {
   // Track the last content successfully saved to avoid redundant writes
   const lastSavedRef = useRef<string>(content || '')
+  const gcTimerRef = useRef<number | null>(null)
+  function extractImagesFromClipboard(e: ClipboardEvent): File[] {
+    const files: File[] = []
+    if (!e.clipboardData) return files
+    for (const item of e.clipboardData.items) {
+      if (item.kind === 'file') {
+        const file = item.getAsFile()
+        if (file && file.type.startsWith('image/')) files.push(file)
+      }
+    }
+    return files
+  }
+
+  async function saveFileAsAttachment(currentNoteId: number, file: File) {
+    const ab = await file.arrayBuffer()
+    const { url, width, height } = await window.api.saveImage(String(currentNoteId), ab, file.type)
+    return { url, width, height }
+  }
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
     content,
@@ -23,6 +43,41 @@ export default function Editor({ noteId, content, onSaved }: Props) {
     editorProps: {
       attributes: {
         class: 'min-h-full',
+      },
+      handlePaste: (_view, event) => {
+        const e = event as ClipboardEvent
+        const files = extractImagesFromClipboard(e)
+        if (!files.length || noteId == null) return false
+        e.preventDefault()
+        ;(async () => {
+          for (const f of files) {
+            try {
+              const { url, width, height } = await saveFileAsAttachment(noteId, f)
+              editor?.chain().focus().setImage({ src: url, alt: f.name, width, height }).run()
+            } catch (err) {
+              console.error('Failed to save pasted image', err)
+            }
+          }
+        })()
+        return true
+      },
+      handleDrop: (_view, event, _slice, moved) => {
+        const e = event as DragEvent
+        if (moved || !e.dataTransfer || noteId == null) return false
+        const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))
+        if (!files.length) return false
+        e.preventDefault()
+        ;(async () => {
+          for (const f of files) {
+            try {
+              const { url, width, height } = await saveFileAsAttachment(noteId, f)
+              editor?.chain().focus().setImage({ src: url, alt: f.name, width, height }).run()
+            } catch (err) {
+              console.error('Failed to save dropped image', err)
+            }
+          }
+        })()
+        return true
       },
     },
     onUpdate: ({ editor }) => {
@@ -40,6 +95,11 @@ export default function Editor({ noteId, content, onSaved }: Props) {
             lastSavedRef.current = html
             // Inform parent so in-memory selected note stays in sync
             onSaved?.(noteId, html)
+            // Debounced GC of unreferenced attachments (HTML-based)
+            if (gcTimerRef.current) window.clearTimeout(gcTimerRef.current)
+            gcTimerRef.current = window.setTimeout(() => {
+              try { window.api.gcNoteAttachments(String(noteId)) } catch {}
+            }, 1500)
           } catch (err) {
             // Silently ignore here; surfaced errors can be added later (Req 5)
             console.error('Failed to save content', err)

@@ -42,6 +42,12 @@ export default function NoteItem({ note, active, onClick, onDeleted, onRenamed, 
     if (!ok) return
     try {
       await window.db.deleteNote(note.id)
+      // Best-effort cleanup of any attachments for this note
+      try {
+        await window.api.deleteNoteAttachments(String(note.id))
+      } catch (err) {
+        console.warn('Failed to delete attachments for note', note.id, err)
+      }
       onDeleted?.(note.id)
     } catch (e) {
       console.error('Failed to delete note', e)
