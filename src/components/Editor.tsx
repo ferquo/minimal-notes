@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
+import ImageResizable from '../editor/extensions/ImageResizable'
 import TextAlign from '../editor/extensions/TextAlign'
 import EditorToolbar from './EditorToolbar'
 
@@ -35,7 +35,7 @@ export default function Editor({ noteId, content, onSaved }: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image,
+      ImageResizable,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
     content,

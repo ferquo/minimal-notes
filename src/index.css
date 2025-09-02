@@ -106,3 +106,26 @@ body {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
+
+/* Image rendering and resize handles */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+
+.ProseMirror .image-node {
+  position: relative;
+  display: inline-block;
+  color: rgba(99, 102, 241, 0.9); /* indigo handle */
+}
+
+.ProseMirror .image-node.is-selected img,
+.ProseMirror .image-node.is-dragging img {
+  outline: 2px solid rgba(99, 102, 241, 0.4);
+  outline-offset: 2px;
+}
+
+.ProseMirror .image-node:hover .image-resize-handle,
+.ProseMirror .image-node.is-selected .image-resize-handle {
+  opacity: 0.8 !important;
+}
