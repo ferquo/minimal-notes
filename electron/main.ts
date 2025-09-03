@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, nativeImage, protocol } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage, protocol, Menu } from 'electron'
 import fs from 'node:fs'
 import { createNote, deleteNote, getNotes, init, updateNoteContent, updateNoteTitle, recordImage, deleteImagesForNote, deleteImageByFilename, getNoteContent } from './database'
 import path from 'node:path'
@@ -19,6 +19,96 @@ try {
 } catch {}
 
 let win: BrowserWindow | null
+let appSettings: { spellcheckEnabled: boolean } = { spellcheckEnabled: false }
+let settingsPath: string
+
+function loadSettings(p: string) {
+  try {
+    const raw = fs.readFileSync(p, 'utf8')
+    const parsed = JSON.parse(raw)
+    appSettings = { spellcheckEnabled: !!parsed.spellcheckEnabled }
+  } catch {}
+}
+
+function saveSettings(p: string) {
+  try {
+    fs.writeFileSync(p, JSON.stringify(appSettings, null, 2), 'utf8')
+  } catch (e) {
+    console.warn('Failed to save settings', e)
+  }
+}
+
+function applySpellcheckToRenderer() {
+  try { win?.webContents.send('set-spellcheck', appSettings.spellcheckEnabled) } catch {}
+}
+
+function buildAppMenu() {
+  const template: Electron.MenuItemConstructorOptions[] = []
+  const isMac = process.platform === 'darwin'
+
+  if (isMac) {
+    template.push({
+      label: app.name,
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' },
+      ],
+    })
+  }
+
+  template.push({
+    label: 'File',
+    submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
+  })
+
+  template.push({
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'selectAll' },
+      { type: 'separator' },
+      {
+        label: 'Spellcheck',
+        type: 'checkbox',
+        checked: appSettings.spellcheckEnabled,
+        click: (item) => {
+          appSettings.spellcheckEnabled = !!item.checked
+          saveSettings(settingsPath)
+          applySpellcheckToRenderer()
+        },
+      },
+    ],
+  })
+
+  template.push({
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'toggleDevTools' },
+      { type: 'separator' },
+      { role: 'resetZoom' },
+      { role: 'zoomIn' },
+      { role: 'zoomOut' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' },
+    ],
+  })
+
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+}
 
 function createWindow() {
   // Determine icon path for platforms that use BrowserWindow icon (Win/Linux)
@@ -243,6 +333,11 @@ app.whenReady().then(() => {
   registerNotesProtocol()
   registerAttachmentIpc()
 
+  // Settings storage
+  settingsPath = path.join(app.getPath('userData'), 'settings.json')
+  loadSettings(settingsPath)
+  buildAppMenu()
+
   // On macOS in development, set the Dock icon explicitly.
   // The app bundle icon is only applied to packaged apps.
   if (process.platform === 'darwin') {
@@ -302,6 +397,9 @@ app.whenReady().then(() => {
   }
 
   createWindow()
+
+  // After window created, apply current spellcheck setting to renderer
+  applySpellcheckToRenderer()
 })
 
 ipcMain.handle('getNotes', getNotes)
@@ -309,3 +407,6 @@ ipcMain.handle('createNote', createNote)
 ipcMain.handle('updateNoteTitle', (_event, id, title) => updateNoteTitle(id, title))
 ipcMain.handle('updateNoteContent', (_event, id, content) => updateNoteContent(id, content))
 ipcMain.handle('deleteNote', (_event, id) => deleteNote(id))
+
+// Settings IPC
+ipcMain.handle('getSettings', () => ({ ...appSettings }))

@@ -14,4 +14,11 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('saveImage', { noteId, bytes: data, mime }),
   deleteNoteAttachments: (noteId: string) => ipcRenderer.invoke('deleteNoteAttachments', noteId),
   gcNoteAttachments: (noteId: string) => ipcRenderer.invoke('gcNoteAttachments', noteId),
+  // App settings bridge
+  getSettings: () => ipcRenderer.invoke('getSettings'),
+  onSetSpellcheck: (cb: (enabled: boolean) => void) => {
+    const listener = (_: unknown, enabled: boolean) => cb(enabled)
+    ipcRenderer.on('set-spellcheck', listener)
+    return () => ipcRenderer.removeListener('set-spellcheck', listener)
+  },
 })
