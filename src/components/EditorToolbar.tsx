@@ -141,6 +141,37 @@ export default function EditorToolbar({ editor }: Props) {
       </Group>
 
       <Group>
+        <ToggleButton
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          active={editor.isActive('code')}
+          title="Inline code"
+        >
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M7 5L3 10l4 5M13 5l4 5-4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </ToggleButton>
+        <ToggleButton
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          active={editor.isActive('codeBlock')}
+          title="Code block"
+        >
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2" />
+            <path d="M8 9l-2 1 2 1M12 9l2 1-2 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </ToggleButton>
+        <ToggleButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          active={editor.isActive('blockquote')}
+          title="Blockquote"
+        >
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M5 6h6v4H7v4H5V6zm8 0h6v4h-4v4h-2V6z" fill="currentColor" />
+          </svg>
+        </ToggleButton>
+      </Group>
+
+      <Group>
         <ToggleButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} title="Bullet list">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="4" cy="5" r="1.5" fill="currentColor" />
