@@ -20,11 +20,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="text-xs px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/70"
+      className="text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/70"
       title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
     >
       {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
     </button>
   )
 }
-

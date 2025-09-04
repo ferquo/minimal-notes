@@ -59,7 +59,7 @@ function App() {
         onMouseDown={() => setIsResizing(true)}
         className={`w-1 h-screen cursor-col-resize ${isResizing ? 'bg-slate-300 dark:bg-slate-700' : 'bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700'}`}
       />
-      <main className="flex-1 min-h-0 h-screen p-3 overflow-auto">
+      <main className="flex-1 min-h-0 h-screen overflow-auto">
         <Editor
           key={selected?.id ?? 'no-note'}
           noteId={selected?.id ?? null}
