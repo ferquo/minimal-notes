@@ -62,7 +62,7 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-3 h-12 border-b border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 flex items-center justify-between gap-2">
+      <div className="px-3 min-h-[var(--toolbar-h)] border-b border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 flex items-center justify-between gap-2">
         <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 tracking-wide">Notes</div>
         <div className="flex items-center gap-2">
           <ThemeToggle />

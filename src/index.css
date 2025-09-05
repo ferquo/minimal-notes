@@ -16,6 +16,8 @@
 /* App scaffolding helpers */
 :root {
   color-scheme: light;
+  /* Responsive toolbar/header height: grows slightly with viewport size */
+  --toolbar-h: clamp(44px, 4.2vh, 56px);
 }
 
 html, body, #root {

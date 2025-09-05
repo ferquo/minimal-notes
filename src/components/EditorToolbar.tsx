@@ -86,7 +86,7 @@ export default function EditorToolbar({ editor }: Props) {
     ;(editor.chain() as any).focus().setTextAlign(value).run()
   }
   return (
-    <div className="sticky top-0 z-10 px-3 h-12 m-0 flex flex-wrap items-center justify-center gap-y-2 gap-x-0 divide-x divide-slate-200 dark:divide-slate-800 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/70 backdrop-blur w-full">
+    <div className="sticky top-0 z-10 px-3 m-0 flex flex-wrap items-center justify-center gap-y-2 gap-x-0 divide-x divide-slate-200 dark:divide-slate-800 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/70 backdrop-blur w-full min-h-[var(--toolbar-h)]">
       <Group>
         <HeadingSelect editor={editor} />
       </Group>
