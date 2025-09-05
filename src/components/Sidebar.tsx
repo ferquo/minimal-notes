@@ -30,25 +30,6 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
     }
   }
 
-  async function persistOrderIfChanged() {
-    try {
-      const orig = originalOrderRef.current
-      if (!orig) return
-      const current = notes.map((n) => n.id)
-      const changed = current.length !== orig.length || current.some((id, i) => id !== orig[i])
-      if (changed) {
-        await window.db.reorderNotes(current)
-        // Refresh to ensure we reflect DB state exactly
-        await refresh()
-      }
-    } catch (e) {
-      console.error('Failed to persist reorder', e)
-      await refresh()
-    } finally {
-      originalOrderRef.current = null
-    }
-  }
-
   async function create() {
     const created = await window.db.createNote()
     const newId = (created as any).id ?? null
