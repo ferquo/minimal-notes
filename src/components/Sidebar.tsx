@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Note } from '../types'
 import NoteItem from './NoteItem'
 import ThemeToggle from './ThemeToggle'
@@ -14,6 +14,9 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
   const [loading, setLoading] = useState(false)
   const [renameId, setRenameId] = useState<number | null>(null)
   const [pendingSelectId, setPendingSelectId] = useState<number | null>(null)
+  const [draggingId, setDraggingId] = useState<number | null>(null)
+  const [dragOverId, setDragOverId] = useState<number | null>(null)
+  const originalOrderRef = useRef<number[] | null>(null)
 
   async function refresh() {
     setLoading(true)
@@ -24,6 +27,25 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
       return list
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function persistOrderIfChanged() {
+    try {
+      const orig = originalOrderRef.current
+      if (!orig) return
+      const current = notes.map((n) => n.id)
+      const changed = current.length !== orig.length || current.some((id, i) => id !== orig[i])
+      if (changed) {
+        await window.db.reorderNotes(current)
+        // Refresh to ensure we reflect DB state exactly
+        await refresh()
+      }
+    } catch (e) {
+      console.error('Failed to persist reorder', e)
+      await refresh()
+    } finally {
+      originalOrderRef.current = null
     }
   }
 
@@ -83,7 +105,74 @@ export default function Sidebar({ selectedId, onSelect, onCreated }: Props) {
         )}
         <ul>
           {notes.map((n) => (
-            <li key={n.id}>
+            <li
+              key={n.id}
+              draggable
+              onDragStart={(e) => {
+                setDraggingId(n.id)
+                setDragOverId(null)
+                originalOrderRef.current = notes.map((x) => x.id)
+                try { e.dataTransfer?.setData('text/plain', String(n.id)) } catch {}
+                if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'
+              }}
+              onDragOver={(e) => {
+                if (draggingId == null) return
+                e.preventDefault()
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+                if (n.id !== draggingId) setDragOverId(n.id)
+              }}
+              onDrop={async (e) => {
+                e.preventDefault()
+                const fromId = draggingId
+                const toId = n.id
+                setDragOverId(null)
+                setDraggingId(null)
+                if (fromId == null || fromId === toId) return
+                // Reorder once on drop
+                const current = notes.slice()
+                const fromIdx = current.findIndex((x) => x.id === fromId)
+                const toIdx = current.findIndex((x) => x.id === toId)
+                if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx) return
+                const [item] = current.splice(fromIdx, 1)
+                current.splice(toIdx, 0, item)
+                setNotes(current)
+                const ids = current.map((x) => x.id)
+                try {
+                  await window.db.reorderNotes(ids)
+                  await refresh()
+                } catch (err) {
+                  console.error('Failed to persist reorder', err)
+                  await refresh()
+                } finally {
+                  originalOrderRef.current = null
+                }
+              }}
+              onDragEnd={() => {
+                // Cleanup only; persistence happens on drop
+                setDragOverId(null)
+                setDraggingId(null)
+              }}
+              className={[
+                'relative group',
+                'cursor-grab active:cursor-grabbing select-none',
+                dragOverId === n.id ? 'ring-2 ring-indigo-400 rounded-sm' : '',
+              ].join(' ')}
+            >
+              <span
+                className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-70"
+                aria-hidden="true"
+                title="Drag to reorder"
+              >
+                {/* 6-dot handle icon */}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="7" cy="8" r="1" />
+                  <circle cx="12" cy="8" r="1" />
+                  <circle cx="17" cy="8" r="1" />
+                  <circle cx="7" cy="14" r="1" />
+                  <circle cx="12" cy="14" r="1" />
+                  <circle cx="17" cy="14" r="1" />
+                </svg>
+              </span>
               <NoteItem
                 note={n}
                 active={n.id === selectedId}

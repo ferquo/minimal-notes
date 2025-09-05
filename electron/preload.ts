@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('db', {
   updateNoteTitle: (id: number, title: string) => ipcRenderer.invoke('updateNoteTitle', id, title),
   updateNoteContent: (id: number, content: string) => ipcRenderer.invoke('updateNoteContent', id, content),
   deleteNote: (id: number) => ipcRenderer.invoke('deleteNote', id),
+  reorderNotes: (ids: number[]) => ipcRenderer.invoke('reorderNotes', ids),
 })
 
 // Narrow bridge for attachments/images

@@ -10,6 +10,7 @@ declare global {
         content: string | null
         createdAt: string
         updatedAt: string
+        position?: number
       }[]>
       createNote: () => Promise<{
         id: number
@@ -17,10 +18,12 @@ declare global {
         content: string | null
         createdAt: string
         updatedAt: string
+        position?: number
       }>
       updateNoteTitle: (id: number, title: string) => Promise<void>
       updateNoteContent: (id: number, content: string) => Promise<void>
       deleteNote: (id: number) => Promise<void>
+      reorderNotes: (ids: number[]) => Promise<void>
     }
     api: {
       saveImage: (

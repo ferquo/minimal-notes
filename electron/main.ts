@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, nativeImage, protocol, Menu } from 'electron'
 import fs from 'node:fs'
-import { createNote, deleteNote, getNotes, init, updateNoteContent, updateNoteTitle, recordImage, deleteImagesForNote, deleteImageByFilename, getNoteContent } from './database'
+import { createNote, deleteNote, getNotes, init, updateNoteContent, updateNoteTitle, recordImage, deleteImagesForNote, deleteImageByFilename, getNoteContent, reorderNotes } from './database'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import fsp from 'node:fs/promises'
@@ -407,6 +407,7 @@ ipcMain.handle('createNote', createNote)
 ipcMain.handle('updateNoteTitle', (_event, id, title) => updateNoteTitle(id, title))
 ipcMain.handle('updateNoteContent', (_event, id, content) => updateNoteContent(id, content))
 ipcMain.handle('deleteNote', (_event, id) => deleteNote(id))
+ipcMain.handle('reorderNotes', (_event, ids: number[]) => reorderNotes(ids))
 
 // Settings IPC
 ipcMain.handle('getSettings', () => ({ ...appSettings }))
